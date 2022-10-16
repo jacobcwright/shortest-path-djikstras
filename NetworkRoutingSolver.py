@@ -23,7 +23,7 @@ class NetworkRoutingSolver:
 
         while prevNode.prev is not None:
             prevEdge = prevNode.prev
-            pathEdges.append((prevEdge.src.loc, prevEdge.dest.loc, str(int(prevEdge.length))))
+            pathEdges.append((prevEdge.src.loc, prevEdge.dest.loc, str(round(prevEdge.length))))
             totalLength += prevEdge.length
             prevNode = prevEdge.src
 
@@ -83,17 +83,13 @@ class NetworkRoutingSolver:
         self.makeQueueHeap(pqHeap, nodeDict)
         pqHeap[srcIndex].distance = 0.0
 
-        for n in pqHeap:
-            print("Node: ", n.distance)
-        print("Dict: ", nodeDict)
-
-        while len(pqHeap) > 0:
+        while len(nodeDict) > 0:
             u = self.deleteMinHeap(pqHeap, nodeDict)
             for edge in u.neighbors:
                 if edge.dest.distance > u.distance + edge.length:
                     edge.dest.distance = u.distance + edge.length
                     edge.dest.prev = edge
-                    self.decreaseKeyHeap(pqHeap, edge.dest, edge.dest.distance, nodeDict)
+                    self.decreaseKeyHeap(pqHeap, edge.dest, nodeDict)
                     
     
     def makeQueueHeap(self, pqHeap, nodeDict):
@@ -110,6 +106,7 @@ class NetworkRoutingSolver:
     def deleteMinHeap(self, pqHeap, nodeDict):
         data = pqHeap[0]
         pqHeap[0] = pqHeap[len(pqHeap) - 1]
+        nodeDict[pqHeap[0]] = 0
         pqHeap.pop(-1)
         nodeDict.pop(data)
         self.heapifyDown(pqHeap, 0, nodeDict)
@@ -117,14 +114,19 @@ class NetworkRoutingSolver:
 
 
     def bubbleUpHeap(self, pqHeap, index, nodeDict):
+        if(index == 0 or index == None):
+            return
+
+        print("BUBBLE UP index: ", index)
+        print("BUBBLE UP parent index: ", self.getParentIndex(index))
+        print("length of pqHeap: ", len(pqHeap))
         if self.hasParent(index):
              if pqHeap[self.getParentIndex(index)].distance > pqHeap[index].distance:
                 self.swap(pqHeap, self.getParentIndex(index), index, nodeDict)
                 self.bubbleUpHeap(pqHeap, self.getParentIndex(index), nodeDict)
 
 
-    def decreaseKeyHeap(self, pqHeap, node, newKey, nodeDict):
-        node.distance = newKey
+    def decreaseKeyHeap(self, pqHeap, node, nodeDict):
         self.bubbleUpHeap(pqHeap, nodeDict.get(node), nodeDict)
         return
 
