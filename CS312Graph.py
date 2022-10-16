@@ -5,7 +5,7 @@ class CS312GraphEdge:
     def __init__( self, src_node, dest_node, edge_length ):
         self.src   = src_node
         self.dest  = dest_node
-        self.length= edge_length
+        self.length = edge_length
 
     def __repr__( self ):
         return self.__str__()
