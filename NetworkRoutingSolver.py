@@ -149,8 +149,9 @@ class NetworkRoutingSolver:
         pqHeap[index2] = temp
 
         # Update nodeDict
-        nodeDict[pqHeap[index1]] = index2
-        nodeDict[pqHeap[index2]] = index1
+        temp = nodeDict[pqHeap[index1]]
+        nodeDict[pqHeap[index1]] = nodeDict[pqHeap[index2]]
+        nodeDict[pqHeap[index2]] = temp
 
 
     def getParentIndex(self, index):
@@ -168,7 +169,11 @@ class NetworkRoutingSolver:
         return self.getParentIndex(index) >= 0
 
     def hasLeftChild(self, index, pqHeap):
+        if(index < 0 or index == None):
+            return False
         return self.getLeftChildIndex(index) < len(pqHeap)
 
     def hasRightChild(self, index, pqHeap):
+        if(index < 0 or index == None):
+            return False
         return self.getRightChildIndex(index) < len(pqHeap)
