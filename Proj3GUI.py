@@ -224,7 +224,7 @@ class Proj3GUI( QMainWindow ):
 		else:
 			self.statusBar.showMessage('')
 			self.generateNetwork()
-			self.view.addPoints( [x.loc for x in self.graph.getNodes()], (0,0,0) )
+			self.view.addPoints( [x.loc for x in self.graph.getNodes()], (255,255,0) )
 			self.view.repaint()
 #		if self.graph:
 #				self.generateNetwork()
