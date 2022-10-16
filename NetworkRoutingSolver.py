@@ -77,25 +77,96 @@ class NetworkRoutingSolver:
 ########## Heap Implementation of Priority Queue ##########
 
     def djikstraHeap(self, srcIndex):
-        # TODO
-        return
+        pqHeap = []
+        nodeDict = {}
+
+        self.makeQueueHeap(pqHeap, nodeDict)
+        pqHeap[srcIndex].distance = 0.0
+
+        for n in pqHeap:
+            print("Node: ", n.distance)
+        print("Dict: ", nodeDict)
+
+        while len(pqHeap) > 0:
+            u = self.deleteMinHeap(pqHeap, nodeDict)
+            for edge in u.neighbors:
+                if edge.dest.distance > u.distance + edge.length:
+                    edge.dest.distance = u.distance + edge.length
+                    edge.dest.prev = edge
+                    self.decreaseKeyHeap(pqHeap, edge.dest, edge.dest.distance, nodeDict)
+                    
     
-    def makeQueueHeap(self):
-        # TODO
+    def makeQueueHeap(self, pqHeap, nodeDict):
+        for i in range(len(self.network.nodes)):
+            pqHeap.append(self.network.nodes[i])
+            nodeDict[self.network.nodes[i]] = i
+            pqHeap[i].distance = float('inf')
+            pqHeap[i].prev = None
+            nodeDict[pqHeap[i]] = i
+            self.bubbleUpHeap(pqHeap, i, nodeDict)
+
+
+
+    def deleteMinHeap(self, pqHeap, nodeDict):
+        data = pqHeap[0]
+        pqHeap[0] = pqHeap[len(pqHeap) - 1]
+        pqHeap.pop(-1)
+        nodeDict.pop(data)
+        self.heapifyDown(pqHeap, 0, nodeDict)
+        return data
+
+
+    def bubbleUpHeap(self, pqHeap, index, nodeDict):
+        if self.hasParent(index):
+             if pqHeap[self.getParentIndex(index)].distance > pqHeap[index].distance:
+                self.swap(pqHeap, self.getParentIndex(index), index, nodeDict)
+                self.bubbleUpHeap(pqHeap, self.getParentIndex(index), nodeDict)
+
+
+    def decreaseKeyHeap(self, pqHeap, node, newKey, nodeDict):
+        node.distance = newKey
+        self.bubbleUpHeap(pqHeap, nodeDict.get(node), nodeDict)
         return
 
-    def deleteMinHeap(self, pqHeap):
-        # TODO
-        return
 
-    def bubbleUpHeap(self, pqHeap, index):
-        # TODO
-        return
+    def heapifyDown(self, pqHeap, index, nodeDict):
+        smallest = index
+        if self.hasLeftChild(index, pqHeap) and pqHeap[smallest].distance > pqHeap[self.getLeftChildIndex(index)].distance:
+            smallest = self.getLeftChildIndex(index)
+        if self.hasRightChild(index, pqHeap) and pqHeap[smallest].distance > pqHeap[self.getRightChildIndex(index)].distance:
+            smallest = self.getRightChildIndex(index)
 
-    def insertHeap(self, pqHeap, node):
-        # TODO
-        return
+        if(smallest != index):
+            self.swap(pqHeap, index, smallest, nodeDict)
+            self.heapifyDown(pqHeap, smallest, nodeDict)
 
-    def decreaseKeyHeap(self, pqHeap, node, newKey):
-        # TODO
-        return
+
+    def swap(self, pqHeap, index1, index2, nodeDict):
+        temp = pqHeap[index1]
+        pqHeap[index1] = pqHeap[index2]
+        pqHeap[index2] = temp
+
+        # Update nodeDict
+        nodeDict[pqHeap[index1]] = index2
+        nodeDict[pqHeap[index2]] = index1
+
+
+    def getParentIndex(self, index):
+        return (index - 1) // 2
+    
+    def getLeftChildIndex(self, index):
+        return index * 2 + 1
+
+    def getRightChildIndex(self, index):
+        return index * 2 + 2
+    
+    def hasParent(self, index):
+        if(index == 0 or index == None):
+            return False
+        return self.getParentIndex(index) >= 0
+
+    def hasLeftChild(self, index, pqHeap):
+        return self.getLeftChildIndex(index) < len(pqHeap)
+
+    def hasRightChild(self, index, pqHeap):
+        return self.getRightChildIndex(index) < len(pqHeap)
