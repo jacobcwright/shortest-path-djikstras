@@ -27,6 +27,9 @@ class NetworkRoutingSolver:
             totalLength += prevEdge.length
             prevNode = prevEdge.src
 
+        if(len(pathEdges) == 0):
+            return {'cost':float('inf'), 'path':pathEdges}
+
         return {'cost':totalLength, 'path':pathEdges}
 
     def computeShortestPaths( self, srcIndex, use_heap=False ):
