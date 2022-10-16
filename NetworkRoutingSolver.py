@@ -117,9 +117,6 @@ class NetworkRoutingSolver:
         if(index == 0 or index == None):
             return
 
-        print("BUBBLE UP index: ", index)
-        print("BUBBLE UP parent index: ", self.getParentIndex(index))
-        print("length of pqHeap: ", len(pqHeap))
         if self.hasParent(index):
              if pqHeap[self.getParentIndex(index)].distance > pqHeap[index].distance:
                 self.swap(pqHeap, self.getParentIndex(index), index, nodeDict)
