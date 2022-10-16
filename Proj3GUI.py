@@ -15,6 +15,10 @@ if PYQT_VER == 'PYQT5':
 elif PYQT_VER == 'PYQT4':
 	from PyQt4.QtGui import *
 	from PyQt4.QtCore import *
+elif PYQT_VER == 'PYQT6':
+	from PyQt6.QtGui import *
+	from PyQt6.QtCore import *
+	from PyQt6.QtWidgets import *
 else:
 	raise Exception('Unsupported Version of PyQt: {}'.format(PYQT_VER))
 
@@ -93,7 +97,7 @@ class PointLineView( QWidget ):
 # Reimplemented to allow setting source/target nodes with mouse click
 	def mousePressEvent(self,e):
 		scale = self.getScale()
-		self.pointclicked.emit(self.clicknode,QPointF((e.x()-self.width())/scale+2,(self.height()-e.y())/scale-1))
+		self.pointclicked.emit(self.clicknode,QPointF((e.position().x()-self.width())/scale+2,(self.height()-e.position().y())/scale-1))
 		if self.clicknode == 'start':
 			self.clicknode = 'end' 
 		else:
@@ -106,14 +110,14 @@ class PointLineView( QWidget ):
 		h = self.height()
 		w2h_desired_ratio = (xr[1]-xr[0])/(yr[1]-yr[0])
 		if w / h < w2h_desired_ratio:
-			 scale = w / (xr[1]-xr[0])
+			scale = w / (xr[1]-xr[0])
 		else:
-			 scale = h / (yr[1]-yr[0])
+			scale = h / (yr[1]-yr[0])
 		return scale
 
 	def paintEvent(self, event):
 		painter = QPainter(self)
-		painter.setRenderHint(QPainter.Antialiasing,True)
+		painter.setRenderHint(QPainter.RenderHint.Antialiasing,True)
 		scale = self.getScale()
 		tform = QTransform()
 		tform.translate(self.width()/2.0,self.height()/2.0)
@@ -127,7 +131,7 @@ class PointLineView( QWidget ):
 				painter.drawLine( ln )
 		R = 1.0E3
 		RECT = QRectF(-R,-R,2.0*R,2.0*R)
-		align = QTextOption( Qt.Alignment(Qt.AlignHCenter | Qt.AlignVCenter) )
+		align = QTextOption(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 		for color in self.labelList:
 			c = QColor(color[0],color[1],color[2])
 			painter.setPen( c )
@@ -148,12 +152,12 @@ class PointLineView( QWidget ):
 				pt = QPointF(scale*point.x(), scale*point.y())
 				painter.drawEllipse( pt, 1.0, 1.0)
 		if self.start_pt:
-			painter.setPen( QPen(QColor(0.0,255.0,0.0), 2.0) )
+			painter.setPen( QPen(QColor(0,255,0), 2.0) )
 			pt = QPointF( scale*self.start_pt.x() -0.0, \
 						  scale*self.start_pt.y() -0.0 )
 			painter.drawEllipse( pt, 4.0, 4.0)
 		if self.end_pt:
-			painter.setPen( QPen(QColor(255.0,0.0,0.0), 2.0) )
+			painter.setPen( QPen(QColor(255,0,0), 2.0) )
 			pt = QPointF( scale*self.end_pt.x() -0.0, \
 						  scale*self.end_pt.y() -0.0 )
 			painter.drawEllipse( pt, 4.0, 4.0)
