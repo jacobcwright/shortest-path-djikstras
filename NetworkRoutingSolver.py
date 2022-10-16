@@ -9,8 +9,6 @@ class NetworkRoutingSolver:
     def __init__( self):
         pass
 
-    pqHeap = []
-
     def initializeNetwork( self, network ):
         assert( type(network) == CS312Graph )
         self.network = network
@@ -76,3 +74,28 @@ class NetworkRoutingSolver:
         return minNode
 
     
+########## Heap Implementation of Priority Queue ##########
+
+    def djikstraHeap(self, srcIndex):
+        # TODO
+        return
+    
+    def makeQueueHeap(self):
+        # TODO
+        return
+
+    def deleteMinHeap(self, pqHeap):
+        # TODO
+        return
+
+    def bubbleUpHeap(self, pqHeap, index):
+        # TODO
+        return
+
+    def insertHeap(self, pqHeap, node):
+        # TODO
+        return
+
+    def decreaseKeyHeap(self, pqHeap, node, newKey):
+        # TODO
+        return
