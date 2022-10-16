@@ -9,7 +9,6 @@ class NetworkRoutingSolver:
     def __init__( self):
         pass
 
-    pqArray = []
     pqHeap = []
 
     def initializeNetwork( self, network ):
@@ -18,24 +17,19 @@ class NetworkRoutingSolver:
 
     def getShortestPath( self, destIndex ):
         self.dest = destIndex
+        pathEdges = []
+        totalLength = 0
+       
+        destNode = self.network.nodes[self.dest]
+        prevNode = destNode
 
-        # TODO: RETURN THE SHORTEST PATH FOR destIndex
-        #       INSTEAD OF THE DUMMY SET OF EDGES BELOW
-        #       IT'S JUST AN EXAMPLE OF THE FORMAT YOU'LL 
-        #       NEED TO USE
+        while prevNode.prev is not None:
+            prevEdge = prevNode.prev
+            pathEdges.append((prevEdge.src.loc, prevEdge.dest.loc, str(int(prevEdge.length))))
+            totalLength += prevEdge.length
+            prevNode = prevEdge.src
 
-        path_edges = []
-        total_length = 0
-        node = self.network.nodes[self.source]
-        edges_left = 3
-
-        while edges_left > 0:
-            edge = node.neighbors[2]
-            path_edges.append( (edge.src.loc, edge.dest.loc, '{:.0f}'.format(edge.length)) )
-            total_length += edge.length
-            node = edge.dest
-            edges_left -= 1
-        return {'cost':total_length, 'path':path_edges}
+        return {'cost':totalLength, 'path':pathEdges}
 
     def computeShortestPaths( self, srcIndex, use_heap=False ):
         self.source = srcIndex
@@ -53,37 +47,32 @@ class NetworkRoutingSolver:
 ########## Array Implementation of Priority Queue ##########
 
     def djikstraArray(self, srcIndex):
-        self.makeQueueArray()
-        self.decreaseKeyArray(srcIndex, 0)
+        pqArray = self.makeQueueArray()
+        for node in pqArray:
+            node.distance = float('inf')
+            node.prev = None
+        pqArray[srcIndex].distance = 0.0
         
-        
+        while len(pqArray) > 0:
+            u = self.deleteMinArray(pqArray)
+            for edge in u.neighbors:
+                if edge.dest.distance > u.distance + edge.length:
+                    edge.dest.distance = u.distance + edge.length
+                    edge.dest.prev = edge
+
 
     def makeQueueArray(self):
-        for node in self.network.nodes:
-            self.pqArray.append(node)
-            self.pqArray[node.node_id].distance = float('inf')
-        for node in self.pqArray:
-            print(node)
-            print(node.distance)
+        return self.network.nodes.copy()
 
-
-    def insertArray(self, node, distance):
-        self.pqArray[node] = distance
-
-    def deleteMinArray(self):
+    def deleteMinArray(self, pqArray):
         minNode = None
-        minDistance = float('inf')
-        for node in self.pqArray:
-            if self.pqArray[node] is not None and self.pqArray[node] < minDistance:
-                minNode = node
-                minDistance = self.pqArray[node]
+        minIndex = None
+        for i in range(len(pqArray)):
+            if minNode is None or pqArray[i].distance < minNode.distance:
+                minNode = pqArray[i]
+                minIndex = i
         
-        self.pqArray.pop(minNode)
+        pqArray.pop(minIndex)
         return minNode
-
-    def decreaseKeyArray(self, nodeIndex, distance):
-        self.pqArray[nodeIndex].distance = distance
-        print(self.pqArray[nodeIndex])
-        print(self.pqArray[nodeIndex].distance)
 
     
